@@ -25,6 +25,7 @@ class ViewController: UIViewController {
     
     var arrayTopRating = NSArray()
     var arrayPopular   = NSArray()
+    var arrayNewArrival = NSArray()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,8 +46,8 @@ class ViewController: UIViewController {
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             
-            let topGuide: UIView = self.topLayoutGuide as! UIView
-            make.top.equalTo(topGuide.snp.bottom)
+//            let topGuide: UIView = self.topLayoutGuide as! UIView
+            make.top.equalTo(self.view.snp.top).offset(64)
             
             let h = (Common.share.screenSize.height - 64) / 3
             make.height.equalTo(h)
@@ -73,6 +74,7 @@ class ViewController: UIViewController {
     func registerNibs() {
         self.collectionHighRating.register(self.nib(), forCellWithReuseIdentifier: Cells().Highrating)
         self.collectionPopular.register(self.nib(), forCellWithReuseIdentifier: Cells().Popular)
+        self.collectionNewTheatre.register(self.nib(), forCellWithReuseIdentifier: Cells().NewTheatre)
     }
     
     func nib() -> UINib {
@@ -87,6 +89,7 @@ class ViewController: UIViewController {
     func loadData() {
         self.loadTopRatedMovies()
         self.loadPopularMovies()
+        self.loadNewMovies()
     }
     
 /// Load Top Rated Movie data
@@ -112,6 +115,18 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+/// Load New in Theatres data
+    func loadNewMovies() {
+        API.getApi(controller: self, method: API.newArrival, param: [:]) { (result) in
+            if result != nil {
+                print("Got result: ", result!)
+                guard let returned = result?.value(forKey: "results") else { return }
+                self.arrayNewArrival = returned as! NSArray
+                self.collectionNewTheatre.reloadData()
+            }
+        }
+    }
 }
 
 extension ViewController: UICollectionViewDataSource {
@@ -123,7 +138,7 @@ extension ViewController: UICollectionViewDataSource {
         var counts = 0
         switch collectionView {
         case collectionNewTheatre:
-            counts = 0
+            counts = self.arrayNewArrival.count
             break
         case collectionPopular:
             counts = self.arrayPopular.count
@@ -143,7 +158,7 @@ extension ViewController: UICollectionViewDataSource {
         
         if collectionView.isEqual(self.collectionNewTheatre) {
             identifier = Cells().NewTheatre
-            array = []
+            array = self.arrayNewArrival
         } else if collectionView.isEqual(self.collectionPopular) {
             identifier = Cells().Popular
             array = self.arrayPopular

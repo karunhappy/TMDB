@@ -27,7 +27,7 @@ class API: NSObject {
 /// API Method names
     class var topRated: String { return API.movie() + "top_rated?" + API.apikey() }
     class var popular: String  { return API.movie() + "popular?" + API.apikey() }
-    class var newArrival: String { return API.movie() + "" + API.apikey() }
+    class var newArrival: String { return API.movie() + "now_playing?" + API.apikey() }
     
 /// Check for Internet Connectivity
     class func isConnectedToInternet() -> Bool {
